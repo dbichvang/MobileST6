@@ -6,42 +6,133 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    android:paddingTop="?attr/actionBarSize"
     android:padding="16dp"
     android:background="#F5F5F5"
     tools:context=".HomeActivity">
 
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
         android:layout_marginBottom="16dp">
 
         <EditText
             android:id="@+id/etSearch"
-            android:layout_width="match_parent"
+            android:layout_width="0dp"
+            android:layout_weight="1"
             android:layout_height="48dp"
-            android:background="@drawable/bg_search"
+            android:background="@android:drawable/editbox_background"
             android:drawableLeft="@android:drawable/ic_menu_search"
             android:drawablePadding="8dp"
             android:hint="Tìm sản phẩm..."
             android:paddingStart="16dp"
-            android:paddingEnd="48dp"/>
+            android:textColor="@color/black" />
 
         <ImageView
             android:id="@+id/ivCart"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="8dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/cart"/>
-    </RelativeLayout>
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:src="@drawable/cart"
+            android:layout_marginStart="8dp"/>
+    </LinearLayout>
+    <ViewFlipper
+        android:id="@+id/imgBanner"
+        android:layout_width="match_parent"
+        android:layout_height="160dp"
+        android:autoStart="true"
+        android:flipInterval="3000"
+        android:inAnimation="@android:anim/slide_in_left"
+        android:outAnimation="@android:anim/slide_out_right"
+        android:layout_marginBottom="12dp">
 
-    <ListView
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/banner"/>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/banner2"/>
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:src="@drawable/banner3"/>
+    </ViewFlipper>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center"
+        android:layout_marginBottom="12dp">
+
+        <TextView
+            android:id="@+id/txtTatCa"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Tất cả"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:background="@drawable/bg_category"
+            android:padding="8dp"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/txtGiay"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Giày"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:background="@drawable/bg_category"
+            android:padding="8dp"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/txtTui"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Túi xách"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:background="@drawable/bg_category"
+            android:padding="8dp"
+            android:layout_marginEnd="8dp"/>
+
+        <TextView
+            android:id="@+id/txtNon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Nón"
+            android:textSize="16sp"
+            android:textColor="@color/black"
+            android:background="@drawable/bg_category"
+            android:padding="8dp"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/tvTitleCategory"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tất cả sản phẩm"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:layout_marginBottom="8dp"/>
+
+    <GridView
         android:id="@+id/lvProducts"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:divider="@android:color/darker_gray"
-        android:dividerHeight="0.5dp" />
+        android:numColumns="2"
+        android:verticalSpacing="12dp"
+        android:horizontalSpacing="12dp"
+        android:stretchMode="columnWidth"
+        android:gravity="center"/>
 </LinearLayout>
