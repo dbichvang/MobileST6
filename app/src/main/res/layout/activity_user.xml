@@ -1,0 +1,71 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="24dp"
+    android:orientation="vertical"
+    android:gravity="top|center_horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F9F9F9">
+
+    <!-- Quay lại trang chủ -->
+    <Button
+        android:id="@+id/btnBackToHome"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="← Trang chủ"
+        android:backgroundTint="@android:color/darker_gray"
+        android:textColor="#FFFFFF"
+        android:layout_gravity="start"
+        android:drawableLeft="@android:drawable/ic_menu_revert"
+        android:drawablePadding="8dp"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp"
+        android:layout_marginBottom="24dp" />
+
+    <!-- Ảnh đại diện -->
+    <ImageView
+        android:id="@+id/ivUser"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/user"
+        android:layout_gravity="center"
+        android:layout_marginBottom="16dp"
+        android:background="@android:color/white"
+        android:padding="8dp"
+        android:elevation="4dp"
+        android:scaleType="centerCrop" />
+
+    <!-- Tên người dùng -->
+    <TextView
+        android:id="@+id/tvWelcome"
+        android:text="Xin chào"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        android:textColor="#333333"
+        android:layout_marginBottom="32dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <!-- Nút đổi mật khẩu -->
+    <Button
+        android:id="@+id/btnChangePassword"
+        android:text="Đổi mật khẩu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#2196F3"
+        android:textColor="#FFFFFF"
+        android:drawableLeft="@android:drawable/ic_menu_edit"
+        android:drawablePadding="10dp" />
+
+    <!-- Nút đăng xuất -->
+    <Button
+        android:id="@+id/btnLogout"
+        android:text="Đăng xuất"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="12dp"
+        android:backgroundTint="#F44336"
+        android:textColor="#FFFFFF"
+        android:drawableLeft="@android:drawable/ic_lock_power_off"
+        android:drawablePadding="10dp" />
+</LinearLayout>

@@ -5,6 +5,8 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.GridView;
 import android.widget.ImageView;
@@ -13,6 +15,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class HomeActivity extends AppCompatActivity {
@@ -22,19 +25,30 @@ public class HomeActivity extends AppCompatActivity {
     ImageView ivCart;
     ProductAdapter adapter;
     List<Product> products;
+    TextView tvCartBadge;
+    String tenDangNhap;
+    ImageView ivUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_home);
 
-        if (getSupportActionBar() != null) {
-            getSupportActionBar().hide();
-        }
+        if (getSupportActionBar() != null) getSupportActionBar().hide();
+        tenDangNhap = getIntent().getStringExtra("username");
 
+
+        // Ánh xạ
         lvProducts = findViewById(R.id.lvProducts);
         etSearch = findViewById(R.id.etSearch);
         ivCart = findViewById(R.id.ivCart);
+        tvCartBadge = findViewById(R.id.tvCartBadge);
+        ivUser = findViewById(R.id.ivUser);
+        ivUser.setOnClickListener(v -> {
+            Intent intent = new Intent(HomeActivity.this, UserActivity.class);
+            intent.putExtra("username", tenDangNhap);
+            startActivity(intent);
+        });
 
         TextView txtGiay = findViewById(R.id.txtGiay);
         TextView txtTui = findViewById(R.id.txtTui);
@@ -78,11 +92,20 @@ public class HomeActivity extends AppCompatActivity {
         products.add(new Product(R.drawable.n9, "Nón Trơn", "Thiết kế đơn giản không logo", "100.000đ", "Nón"));
         products.add(new Product(R.drawable.n10, "Nón Unisex", "Phù hợp cho cả nam và nữ", "115.000đ", "Nón"));
 
-        // Khởi tạo adapter
+        Collections.shuffle(products);
         adapter = new ProductAdapter(this, products);
         lvProducts.setAdapter(adapter);
 
-        // Sự kiện lọc theo danh mục
+        // Tìm kiếm
+        etSearch.addTextChangedListener(new TextWatcher() {
+            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
+                adapter.filter(s.toString());
+            }
+            @Override public void afterTextChanged(Editable s) {}
+        });
+
+        // Lọc theo danh mục
         txtTatCa.setOnClickListener(v -> {
             adapter.filterByCategory("Tất cả");
             highlightCategory(txtTatCa, txtGiay, txtTui, txtNon);
@@ -107,16 +130,7 @@ public class HomeActivity extends AppCompatActivity {
             tvTitleCategory.setText("Danh mục: Nón");
         });
 
-        // Tìm kiếm
-        etSearch.addTextChangedListener(new TextWatcher() {
-            @Override public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-            @Override public void onTextChanged(CharSequence s, int start, int before, int count) {
-                adapter.filter(s.toString());
-            }
-            @Override public void afterTextChanged(Editable s) {}
-        });
-
-        // Click sản phẩm
+        // Mở chi tiết sản phẩm
         lvProducts.setOnItemClickListener((parent, view, position, id) -> {
             Product selected = (Product) adapter.getItem(position);
             Intent intent = new Intent(HomeActivity.this, ProductDetailActivity.class);
@@ -124,17 +138,46 @@ public class HomeActivity extends AppCompatActivity {
             intent.putExtra("name", selected.getName());
             intent.putExtra("description", selected.getDescription());
             intent.putExtra("price", selected.getPrice());
-            startActivity(intent);
+            startActivityForResult(intent, 123);
         });
+
 
         // Mở giỏ hàng
         ivCart.setOnClickListener(v -> {
             Intent intent = new Intent(HomeActivity.this, CartActivity.class);
             startActivity(intent);
         });
+
+        updateCartBadge();
     }
 
-    // 👉 Hàm làm nổi bật danh mục được chọn
+    @Override
+    protected void onResume() {
+        super.onResume();
+        updateCartBadge();
+    }
+
+    private void updateCartBadge() {
+        int itemCount = CartManager.getInstance().getItemCount(this);
+        Log.d("DEBUG_CART", "Cart count: " + itemCount);
+        if (itemCount > 0) {
+            tvCartBadge.setVisibility(View.VISIBLE);
+            tvCartBadge.setText(String.valueOf(itemCount));
+        } else {
+            tvCartBadge.setVisibility(View.GONE);
+        }
+    }
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (requestCode == 123 && resultCode == RESULT_OK) {
+            updateCartBadge();
+        }
+    }
+
+
+
+
     private void highlightCategory(TextView selected, TextView... others) {
         selected.setBackgroundResource(R.drawable.bg_category_selected);
         selected.setTextColor(Color.WHITE);

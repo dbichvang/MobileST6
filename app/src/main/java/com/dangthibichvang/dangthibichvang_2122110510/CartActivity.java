@@ -5,6 +5,8 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.*;
+
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import org.json.*;
 
@@ -60,13 +62,30 @@ public class CartActivity extends AppCompatActivity {
             startActivity(i);
         });
 
+        Button btnClearCart = findViewById(R.id.btnClearCart);
+
         btnClearCart.setOnClickListener(v -> {
-            prefs.edit().putString("cartItems", "[]").apply();
-            cartItems.clear();
-            adapter.notifyDataSetChanged();
-            updateTotalPrice();
-            Toast.makeText(CartActivity.this, "Đã xóa toàn bộ giỏ hàng!", Toast.LENGTH_SHORT).show();
+            new AlertDialog.Builder(CartActivity.this)
+                    .setTitle("Xác nhận xóa")
+                    .setMessage("Bạn có chắc chắn muốn xóa toàn bộ giỏ hàng không?")
+                    .setPositiveButton("Xóa", (dialog, which) -> {
+                        // Xóa SharedPreferences
+                        SharedPreferences prefs = getSharedPreferences("CART", MODE_PRIVATE);
+                        prefs.edit().remove("cartItems").apply();
+
+                        cartItems.clear();
+                        adapter.notifyDataSetChanged();
+
+                        tvTotal.setText("Tổng: 0đ");
+
+                        Toast.makeText(this, "Đã xóa giỏ hàng", Toast.LENGTH_SHORT).show();
+                    })
+                    .setNegativeButton("Hủy", null)
+                    .show();
         });
+    }
+
+    private void loadCartItems() {
     }
 
     private void loadCart() {
@@ -120,4 +139,5 @@ public class CartActivity extends AppCompatActivity {
             e.printStackTrace();
         }
     }
+
 }

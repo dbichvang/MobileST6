@@ -30,12 +30,31 @@
             android:paddingStart="16dp"
             android:textColor="@color/black" />
 
-        <ImageView
-            android:id="@+id/ivCart"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
-            android:src="@drawable/cart"
-            android:layout_marginStart="8dp"/>
+        <FrameLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="8dp">
+
+            <ImageView
+                android:id="@+id/ivCart"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/cart"
+                android:contentDescription="Giỏ hàng" />
+
+            <TextView
+                android:id="@+id/tvCartBadge"
+                android:layout_width="18dp"
+                android:layout_height="18dp"
+                android:layout_gravity="end|top"
+                android:background="@drawable/circle_red"
+                android:text="0"
+                android:textSize="10sp"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:visibility="gone"/>
+        </FrameLayout>
+
     </LinearLayout>
     <ViewFlipper
         android:id="@+id/imgBanner"
@@ -135,4 +154,14 @@
         android:horizontalSpacing="12dp"
         android:stretchMode="columnWidth"
         android:gravity="center"/>
+    <ImageView
+        android:id="@+id/ivUser"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="end"
+        android:layout_margin="8dp"
+        android:src="@drawable/user"
+        android:contentDescription="Ảnh đại diện người dùng"/>
+
+
 </LinearLayout>

@@ -2,66 +2,93 @@ package com.dangthibichvang.dangthibichvang_2122110510;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
-import android.content.SharedPreferences;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity {
+
+    EditText edtUsername, edtPassword;
+    Button btnLogin, btnRegister;
+    TextView tvForgotPassword;
+    String url = "https://6870657c7ca4d06b34b6af18.mockapi.io/LoginRegisterAPI/users";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
         setContentView(R.layout.activity_login);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+
+        edtUsername = findViewById(R.id.editTextText);
+        edtPassword = findViewById(R.id.editTextTextPassword);
+        btnLogin = findViewById(R.id.btnLogin);
+        btnRegister = findViewById(R.id.btnRegister);
+        tvForgotPassword = findViewById(R.id.tvForgotPassword);
+
+        tvForgotPassword.setOnClickListener(v -> {
+            startActivity(new Intent(LoginActivity.this, ForgotPasswordActivity.class));
         });
-        Button btn = findViewById(R.id.btnLogin);
-        btn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                EditText objPhone = findViewById(R.id.editTextText);
-                EditText objPass = findViewById(R.id.editTextTextPassword);
-                
-                String txtPhone = objPhone.getText().toString();
-                String txtPass = objPass.getText().toString();
+        btnLogin.setOnClickListener(v -> loginUser());
 
-                SharedPreferences prefs = getSharedPreferences("MyPrefs", MODE_PRIVATE);
-                String savedUsername = prefs.getString("username", "");
-                String savedPassword = prefs.getString("password", "");
+        btnRegister.setOnClickListener(v -> {
+            Intent i = new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(i);
+        });
+    }
 
-                if (txtPhone.equals(savedUsername) && txtPass.equals(savedPassword)) {
-                    Intent it = new Intent(getApplicationContext(), HomeActivity.class);
-                    startActivity(it);
-                } else {
-                    Toast.makeText(getApplicationContext(), "Login fail", Toast.LENGTH_SHORT).show();
+    private void loginUser() {
+        String username = edtUsername.getText().toString().trim();
+        String password = edtPassword.getText().toString().trim();
+
+        if (username.isEmpty() || password.isEmpty()) {
+            Toast.makeText(this, "Vui lòng điền đầy đủ", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        JsonArrayRequest request = new JsonArrayRequest(Request.Method.GET, url, null,
+                response -> checkUser(response, username, password),
+                error -> {
+                    error.printStackTrace();
+                    Toast.makeText(this, "Lỗi kết nối MockAPI", Toast.LENGTH_SHORT).show();
+                });
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        queue.add(request);
+    }
+
+    private void checkUser(JSONArray response, String username, String password) {
+        try {
+            for (int i = 0; i < response.length(); i++) {
+                JSONObject user = response.getJSONObject(i);
+                String savedUsername = user.getString("username");
+                String savedPassword = user.getString("password");
+
+                if (username.equals(savedUsername) && password.equals(savedPassword)) {
+                    Toast.makeText(this, "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
+
+                    Intent intentHome = new Intent(this, HomeActivity.class);
+                    intentHome.putExtra("username", username);
+                    startActivity(intentHome);
+                    finish();
+                    return;
                 }
-
-
-
             }
-        });
-        Button btnRegister = findViewById(R.id.btnRegister);
-        btnRegister.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
-                startActivity(intent);
-            }
-        });
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
 
-
+        Toast.makeText(this, "Sai tài khoản hoặc mật khẩu", Toast.LENGTH_SHORT).show();
     }
 }

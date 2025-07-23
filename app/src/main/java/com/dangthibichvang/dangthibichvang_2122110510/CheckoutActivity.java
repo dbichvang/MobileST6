@@ -6,9 +6,7 @@ import android.widget.*;
 import androidx.appcompat.app.AppCompatActivity;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-
 import org.json.*;
-
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,6 +17,7 @@ public class CheckoutActivity extends AppCompatActivity {
     TextView tvTotalCheckout;
     EditText etCustomerName, etPhone, etAddress;
     Button btnConfirm;
+    RadioGroup rgPaymentMethods;
 
     List<CartItem> selectedItems;
     SharedPreferences prefs;
@@ -34,6 +33,7 @@ public class CheckoutActivity extends AppCompatActivity {
         etPhone = findViewById(R.id.etPhone);
         etAddress = findViewById(R.id.etAddress);
         btnConfirm = findViewById(R.id.btnConfirm);
+        rgPaymentMethods = findViewById(R.id.rgPaymentMethods);
         prefs = getSharedPreferences("CART", MODE_PRIVATE);
 
         String json = getIntent().getStringExtra("selectedItems");
@@ -53,12 +53,9 @@ public class CheckoutActivity extends AppCompatActivity {
         );
         lvSelectedItems.setAdapter(adapter);
 
-        int total = 0;
-        for (CartItem item : selectedItems) {
-            int price = Integer.parseInt(item.price.replace(".", "").replace("đ", ""));
-            total += price * item.quantity;
-        }
-        tvTotalCheckout.setText("Tổng tiền: " + total + "đ");
+        int total = calculateTotal();
+        String paymentMethod = getSelectedPaymentMethod();
+        tvTotalCheckout.setText("Phương thức: " + paymentMethod + "\nTổng tiền: " + total + "đ");
 
         btnConfirm.setOnClickListener(v -> {
             if (etCustomerName.getText().toString().isEmpty() ||
@@ -68,9 +65,14 @@ public class CheckoutActivity extends AppCompatActivity {
                 return;
             }
 
+            if (rgPaymentMethods.getCheckedRadioButtonId() == -1) {
+                Toast.makeText(this, "Vui lòng chọn phương thức thanh toán!", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             removePurchasedItemsFromCart();
 
-            Toast.makeText(this, "Đặt hàng thành công! Cảm ơn bạn " + etCustomerName.getText().toString(), Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Đặt hàng thành công!\nCảm ơn bạn, " + etCustomerName.getText().toString(), Toast.LENGTH_LONG).show();
 
             Intent i = new Intent(this, HomeActivity.class);
             i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK);
@@ -85,6 +87,24 @@ public class CheckoutActivity extends AppCompatActivity {
             list.add(item.name + " - SL: " + item.quantity + " - " + item.price);
         }
         return list;
+    }
+
+    private int calculateTotal() {
+        int total = 0;
+        for (CartItem item : selectedItems) {
+            int price = Integer.parseInt(item.price.replace(".", "").replace("đ", ""));
+            total += price * item.quantity;
+        }
+        return total;
+    }
+
+    private String getSelectedPaymentMethod() {
+        int checkedId = rgPaymentMethods.getCheckedRadioButtonId();
+        if (checkedId == R.id.rbCOD) return "Thanh toán khi nhận hàng (COD)";
+        if (checkedId == R.id.rbBank) return "Chuyển khoản ngân hàng";
+        if (checkedId == R.id.rbCreditCard) return "Thẻ tín dụng / ATM";
+        if (checkedId == R.id.rbMoMo) return "Ví MoMo";
+        return "";
     }
 
     private void removePurchasedItemsFromCart() {
@@ -110,7 +130,6 @@ public class CheckoutActivity extends AppCompatActivity {
             }
 
             prefs.edit().putString("cartItems", newArray.toString()).apply();
-
         } catch (JSONException e) {
             e.printStackTrace();
         }
